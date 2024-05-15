@@ -1,0 +1,46 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+ol{
+    list-style-type: none;
+}
+body{
+    background: radial-gradient(circle, #163c85 0, #09265a 100%);
+    margin: 0;
+    padding: 0;
+}
+
+.game-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.dealer-hand{
+    width: calc(125px * 2 + 30px);
+    height: 210px;
+    background: red;
+    margin-bottom: 2em;
+}
+
+.hand{
+    display: flex;
+}
+
+.playing-card-item{
+    width: 125px;
+    height: 175px;
+    background: aqua;
+    margin: 1rem;
+}
+
+.player-hands{
+    width: calc(125px * 2 + 30px);
+    height: 210px;
+    background: green;
+    margin-top: 1em;
+}
