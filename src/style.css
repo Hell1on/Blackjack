@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
+
+
 *{
     margin: 0;
     padding: 0;
@@ -12,18 +15,22 @@ body{
     padding: 0;
 }
 
+.game {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
 .game-inner{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
+    margin-top: -20vh;
 }
 
-.dealer-hand{
-    width: calc(125px * 2 + 30px);
-    height: 210px;
-    background: red;
+.dealer{
     margin-bottom: 2em;
 }
 
@@ -31,16 +38,69 @@ body{
     display: flex;
 }
 
-.playing-card-item{
+.invisible {
+    background-image: url("cards/suit.png");
     width: 125px;
     height: 175px;
-    background: aqua;
-    margin: 1rem;
+    background-size: cover;
 }
 
-.player-hands{
-    width: calc(125px * 2 + 30px);
-    height: 210px;
-    background: green;
-    margin-top: 1em;
+.invisible img {
+    opacity: 0;
 }
+
+.playing-card-item{
+    margin: 1rem;
+    transition: opacity 75ms ease-out;
+}
+
+.playing-card-item img{
+    width: 125px;
+    height: 175px;
+}
+
+.message-area{
+    min-height: 5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-button-item{
+    margin: 0.5rem;
+}
+
+.action-button{
+    font-family: Roboto, sans-serif;
+    font-weight: 200;
+    min-width: 6em;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(90deg, #51a1f0 0%, #5999de 100%);
+    padding: 10px 30px;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.small{
+    min-width: 30px;
+    padding: 7px 15px;
+}
+
+.action-button:hover{
+    transition : 0ms;
+    background: linear-gradient(90deg, #3491e7 0%, #3281dc 100%);
+
+}
+

@@ -1,12 +1,19 @@
 'use strict';
 
-const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-const values = ['2', '3', '4', '5', '6', '7',
-  '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const SUITS = ['h', 'd', 'c', 's'];
+const VALUES = ['2', '3', '4', '5', '6', '7',
+  '8', '9', '10', 'j', 'q', 'k', 'a'];
 
 
 const initializeDeck = () => {
-  const deck = [];
+  const deck = SUITS.reduce((deckAcc, suit) =>{
+    for (const value of VALUES) {
+      deckAcc.push({ value, suit })
+    }
+    return deckAcc
+  }, []);
+
+  deck.push(...deck)
   const shuffleDeck = (deck) => {
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -14,11 +21,6 @@ const initializeDeck = () => {
     }
   };
 
-  for (const suit of suits) {
-    for (const value of values) {
-      deck.push({ value, suit });
-    }
-  }
   shuffleDeck(deck);
 
   return deck;
@@ -26,7 +28,40 @@ const initializeDeck = () => {
 
 const DECK = initializeDeck();
 
-const dealCard = () => DECK.pop();
+const dealCard = (hand, visibility = 1) => {
+  const card = DECK.pop();
+  let cardImageName = `${card.value}_${card.suit}`;
+  let invisible = '';
+  if (!visibility) {
+    invisible = 'invisible';
+  }
+
+  const ol = document.getElementsByClassName(hand)[0];
+  ol.innerHTML += `<li class="playing-card-item ${invisible}"> <img src="cards/${cardImageName}.png" alt="${cardImageName}"></li>`
+  return card;
+};
+
+const dealCards = () => {
+  const dealerHand = [];
+  const playerHand = [];
+
+  for (let i = 0; i < 2; i++) {
+    if (i === 1){
+      dealerHand.push(dealCard('dealer-hands', 0))
+      continue;
+    }
+    dealerHand.push(dealCard('dealer-hands'));
+  }
+  for (let i = 0; i < 2; i++) {
+    playerHand.push(dealCard('player-hands'));
+  }
+
+  return [dealerHand, playerHand]
+}
+
+const [dealerHand, playerHand] = [...dealCards()]
+
+console.log(dealerHand, playerHand)
 
 const calculateHand = (hand) => {
   let sum = 0;
@@ -36,7 +71,7 @@ const calculateHand = (hand) => {
       if (sum + 11 > 21) {
         sum++;
       } else sum += 11;
-    } else if (['J', 'Q', 'K'].includes(card.value)) {
+    } else if (['j', 'q', 'k'].includes(card.value)) {
       sum += 10;
     } else {
       sum += parseInt(card.value);
@@ -45,12 +80,3 @@ const calculateHand = (hand) => {
   return sum;
 };
 
-const playerHand = [dealCard(), dealCard()];
-const dealerHand = [dealCard(), dealCard()];
-
-console.log(`Player hand: ${playerHand[0].value} ${playerHand[0].suit} and ${playerHand[1].value} ${playerHand[1].suit}`);
-
-console.log(`Dealer hand: ${dealerHand[0].value} ${dealerHand[0].suit} and ${dealerHand[1].value} ${dealerHand[1].suit}`);
-
-console.log(`Player sum: ${calculateHand(playerHand)}`);
-console.log(`Dealer sum: ${calculateHand(dealerHand)}`);
