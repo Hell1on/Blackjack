@@ -3,17 +3,18 @@
 const dealerPoints = document.querySelector("#dealer-points");
 const playerPoints = document.querySelector("#player-points");
 const message = document.querySelector("#message")
+const countCardsInDeck = document.querySelector("#cards")
 const standButton = document.querySelector("#stand");
 const hitButton = document.querySelector("#hit");
 const doubleButton = document.querySelector("#double");
 const dealButton = document.querySelector("#deal");
 const splitButton = document.querySelector("#split");
-const playerHands = document.querySelector('.player-hands');
+const playerHands = document.querySelector('#player-hands');
 
 const SUITS = ['h', 'd', 'c', 's'];
 const VALUES = ['2', '3', '4', '5', '6', '7',
   '8', '9', '10', 'j', 'q', 'k', 'a'];
-let activeHand = 0;
+
 const initializeDeck = () => {
   const deck = SUITS.reduce((deckAcc, suit) =>{
     for (const value of VALUES) {
@@ -37,6 +38,7 @@ const initializeDeck = () => {
 
 const dealCard = (hand, visibility = 1) => {
   const card = GAME.deck.pop();
+  countCardsInDeck.innerHTML = `Cards left: ${GAME.deck.length}`;
   if (hand === 'dealer-hand'){
     GAME.dealerHand.push(card)
   } else if (hand === 'split-hand') {
@@ -51,10 +53,10 @@ const dealCard = (hand, visibility = 1) => {
   calculateHands();
 
   const ol = document.getElementsByClassName(hand)[0];
+
   ol.innerHTML += `<li id="card${visibility + 1}" class="playing-card-item ${invisible}">
     <img src="cards/${cardImageName}.png" class="playing-card-image" alt="${cardImageName}">
   </li>`
-
 };
 
 const calculateHands = (noStand=1) => {
@@ -124,41 +126,41 @@ const removeButtons = () => {
 }
 
 const checkWinner = () => {
-  const [sumPointsDealer, sumPointsPlayer] = calculateHands(0)
-  if (sumPointsPlayer === 21 && sumPointsDealer === 21) {
-    message.innerHTML = 'Push';
-    removeButtons();
-    return;
-  } else if (sumPointsPlayer === 21) {
-    message.innerHTML = 'Player wins(Blackjack)';
-    removeButtons();
-    return;
-  }
-  if (sumPointsPlayer > 21) {
-    message.innerHTML = 'Dealer wins(bust)';
-    removeButtons();
-    return;
-  }
-  if (sumPointsDealer <= 21) {
-    if (sumPointsPlayer > sumPointsDealer && sumPointsPlayer <= 21) {
-      message.innerHTML = 'Player wins';
-      removeButtons();
-      return;
-    } else if (sumPointsPlayer < sumPointsDealer) {
-      message.innerHTML = 'Dealer wins';
-      removeButtons();
-      return;
+  const [sumPointsDealer, sumPointsPlayer, sumPointsSplit] = calculateHands(0)
+  let resultMessage = '';
+
+  const createMessage = (sumPointsDealer, hand) => {
+    if (hand === 21 && sumPointsDealer === 21) {
+      return 'Push';
+    } else if (hand === 21) {
+      return 'Player wins(Blackjack)';
+    }
+    if (hand > 21) {
+      return 'Dealer wins(bust)';
+    }
+    if (sumPointsDealer <= 21) {
+      if (hand > sumPointsDealer) {
+        return 'Player wins';
+      } else if (hand < sumPointsDealer) {
+        return 'Dealer wins';
+      } else {
+        return 'Push';
+      }
     } else
-      message.innerHTML = 'Push';
-      removeButtons();
-      return;
-  } else
-    message.innerHTML = 'Player wins(bust)';
-    removeButtons();
+      return 'Player wins(bust)';
+  }
+
+  if (GAME.splitHand) {
+    resultMessage += createMessage(sumPointsDealer, sumPointsPlayer) + ' / ';
+    resultMessage += createMessage(sumPointsDealer, sumPointsSplit);
+  } else resultMessage += createMessage(sumPointsDealer, sumPointsPlayer);
+
+  message.innerHTML = resultMessage;
+  removeButtons();
 }
 
 const stand = () => {
-  if (!GAME.splitHand || activeHand) {
+  if (!GAME.splitHand || GAME.activeHand) {
     const hideCard = document.getElementsByClassName("invisible")[0];
     hideCard.classList.remove("invisible")
     let [sumPointsDealer] = calculateHands(0);
@@ -170,28 +172,28 @@ const stand = () => {
     checkWinner()
     return;
   }
-  activeHand = 1;
+  GAME.activeHand = 1;
   setActiveHand();
 };
 standButton.addEventListener("click", stand);
 
 const hit = () => {
-  if (!activeHand) {
+  if (!GAME.activeHand) {
     dealCard("player-hand");
   } else dealCard("split-hand");
 
-  const sumPointsHand = calculateHands()[activeHand + 1];
+  const sumPointsHand = calculateHands()[GAME.activeHand + 1];
   if (sumPointsHand === 21) {
-    if (GAME.splitHand && activeHand === 0) {
-      activeHand = 1;
+    if (GAME.splitHand && GAME.activeHand === 0) {
+      GAME.activeHand = 1;
       setActiveHand();
       return;
     }
     stand()
   }
   if (sumPointsHand > 21) {
-    if (GAME.splitHand && activeHand === 0) {
-      activeHand = 1;
+    if (GAME.splitHand && GAME.activeHand === 0) {
+      GAME.activeHand = 1;
       setActiveHand();
       return;
     }
@@ -210,13 +212,13 @@ doubleButton.addEventListener("click", double);
 
 const setActiveHand = () => {
   const hands = document.querySelectorAll('.player-hand-item');
-  hands.forEach((hand, index) => {
-    if (index === activeHand) {
-      hand.classList.add('active-hand');
+  for (let index = 0; index < hands.length; index++) {
+    if (index === GAME.activeHand) {
+      hands[index].classList.add('active-hand');
     } else {
-      hand.classList.remove('active-hand');
+      hands[index].classList.remove('active-hand');
     }
-  });
+  }
 };
 
 const split = () => {
@@ -244,8 +246,7 @@ const split = () => {
 
     dealCard('player-hand');
     dealCard('split-hand');
-    console.log(GAME.playerHand)
-    console.log(GAME.splitHand)
+
     calculateHands()
     setActiveHand()
     splitButton.classList.add('hidden');
@@ -261,8 +262,7 @@ const removePlayingCards = () => {
 
 
 const Game = () => {
-  console.log(GAME.deck.length)
-  let [sumStartPointsPlayer] = dealCards(GAME.deck)[1];
+  const sumStartPointsPlayer = dealCards(GAME.deck)[1];
   if (sumStartPointsPlayer === 21) {
     const hideCard = document.getElementsByClassName("invisible")[0];
     hideCard.classList.remove("invisible");
@@ -277,10 +277,11 @@ const Game = () => {
 
 const restart = () => {
   removePlayingCards();
-  // Сброс очков и сообщений
+
   dealerPoints.innerHTML = '';
   playerPoints.innerHTML = '';
   message.innerHTML = '';
+  countCardsInDeck.innerHTML = '';
 
 
   standButton.classList.remove('hidden');
@@ -299,7 +300,7 @@ const restart = () => {
   GAME.dealerHand = [];
   GAME.playerHand = [];
   delete GAME.splitHand
-  activeHand = 0
+  GAME.activeHand = 0
 
   Game()
 }
@@ -308,10 +309,10 @@ dealButton.addEventListener("click", restart);
 
 const GAME = {
   deck: initializeDeck(),
+  activeHand: 0,
   dealerHand: [],
   playerHand: [],
 };
-
 
 Game()
 
