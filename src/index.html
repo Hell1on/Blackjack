@@ -11,14 +11,17 @@
         <section class="game-inner">
             <div class="card-area">
                 <section class="dealer">
-                    <ol class="hand dealer-hands playing-card-list">
+                    <ol class="hand dealer-hand playing-card-list">
                     </ol>
                     <div class="points-area">
                         <p id="dealer-points" class="points"></p>
                     </div>
                 </section>
                 <section class="player">
-                    <ol class="hand player-hands">
+                    <ol class="player-hands hand">
+                        <li class="player-hand-item">
+                            <ol class="player-hand playing-card-list"></ol>
+                        </li>
                     </ol>
                     <div class="points-area">
                         <p id="player-points" class="points"></p>
@@ -45,6 +48,9 @@
                 <ol class="action-buttons secondary">
                     <li class="action-button-item">
                         <button id="double" class="action-button small">Double</button>
+                    </li>
+                    <li class="action-button-item split">
+                        <button id="split" class="action-button small hidden">Split</button>
                     </li>
                 </ol>
             </div>

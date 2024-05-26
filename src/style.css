@@ -50,6 +50,10 @@ body{
     transition: opacity 75ms ease-out;
 }
 
+.playing-card-list{
+    display: flex;
+}
+
 .hand{
     display: flex;
 }
@@ -116,11 +120,12 @@ body{
     align-items: center;
 }
 
-.action-button-item{
-    margin: 0.5rem;
+.secondary button {
+    width: 80px;
 }
 
 .action-button{
+    margin: 0.5rem;
     font-family: Roboto, sans-serif;
     font-weight: 200;
     min-width: 6em;
@@ -149,4 +154,5 @@ body{
 
 .hidden {
     display: none;
+    margin: 0;
 }

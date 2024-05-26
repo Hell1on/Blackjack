@@ -7,6 +7,8 @@ const standButton = document.querySelector("#stand");
 const hitButton = document.querySelector("#hit");
 const doubleButton = document.querySelector("#double");
 const dealButton = document.querySelector("#deal");
+const splitButton = document.querySelector("#split");
+const playerHands = document.querySelector('.player-hands');
 
 const SUITS = ['h', 'd', 'c', 's'];
 const VALUES = ['2', '3', '4', '5', '6', '7',
@@ -36,7 +38,7 @@ const initializeDeck = () => {
 
 const dealCard = (hand, visibility = 1) => {
   const card = GAME.deck.pop();
-  if (hand === 'dealer-hands'){
+  if (hand === 'dealer-hand'){
     GAME.dealerHand.push(card)
   } else GAME.playerHand.push(card)
   const cardImageName = `${card.value}_${card.suit}`;
@@ -95,13 +97,13 @@ const calculateHands = (noStand=1) => {
 const dealCards = () => {
   for (let i = 0; i < 2; i++) {
     if (i === 1){
-      dealCard('dealer-hands', 0);
+      dealCard('dealer-hand', 0);
       continue;
     }
-    dealCard('dealer-hands');
+    dealCard('dealer-hand');
   }
   for (let i = 0; i < 2; i++) {
-    dealCard('player-hands');
+    dealCard('player-hand');
   }
 
   return calculateHands()
@@ -115,12 +117,12 @@ const removeButtons = () => {
 }
 
 const checkWinner = (sumPointsDealer, sumPointsPlayer) => {
-  if (sumPointsPlayer === 21) {
-    message.innerHTML = 'Player wins(Blackjack)';
+  if (sumPointsPlayer === 21 && sumPointsDealer === 21) {
+    message.innerHTML = 'Push';
     removeButtons();
     return;
-  } else if (sumPointsPlayer === 21 && sumPointsDealer === 21) {
-    message.innerHTML = 'Push';
+  } else if (sumPointsPlayer === 21) {
+    message.innerHTML = 'Player wins(Blackjack)';
     removeButtons();
     return;
   }
@@ -153,7 +155,7 @@ const stand = () => {
 
   let [sumPointsDealer, sumPointsPlayer] = calculateHands(0);
   while (sumPointsDealer < 17) {
-    dealCard("dealer-hands");
+    dealCard("dealer-hand");
     sumPointsDealer = calculateHands(0)[0];
   }
   checkWinner(sumPointsDealer, sumPointsPlayer)
@@ -161,9 +163,10 @@ const stand = () => {
 standButton.addEventListener("click", stand);
 
 const hit = () => {
-  dealCard("player-hands");
+  dealCard("player-hand");
   let [sumPointsDealer, sumPointsPlayer] = calculateHands();
-  if (sumPointsPlayer >= 21) {
+  if (sumPointsPlayer === 21) stand()
+  if (sumPointsPlayer > 21) {
     const hideCard = document.getElementsByClassName("invisible")[0];
     hideCard.classList.remove("invisible");
     [sumPointsDealer, sumPointsPlayer] = calculateHands(0);
@@ -173,10 +176,21 @@ const hit = () => {
 hitButton.addEventListener("click", hit);
 
 const double = () => {
-  dealCard("player-hands");
+  dealCard("player-hand");
   stand()
 }
 doubleButton.addEventListener("click", double);
+
+const split = () => {
+  if (GAME.playerHand.length === 2) {
+    const hand1 = [GAME.playerHand[0]];
+    const hand2 = [GAME.playerHand[1]];
+
+    GAME.playerHand = hand1;
+    GAME.splitHand = hand2;
+
+  }
+}
 
 const removePlayingCards = () => {
   const playingCards = document.querySelectorAll('.playing-card-item');
@@ -190,8 +204,13 @@ const Game = () => {
   if (sumStartPointsPlayer === 21) {
     const hideCard = document.getElementsByClassName("invisible")[0];
     hideCard.classList.remove("invisible");
-    [sumStartPointsDealer, sumStartPointsPlayer] = dealCards(GAME.deck);
+    [sumStartPointsDealer, sumStartPointsPlayer] = calculateHands(0);
     return checkWinner(sumStartPointsDealer, sumStartPointsPlayer);
+  }
+  console.log(GAME.playerHand[0])
+  if (sumStartPointsPlayer / 2 === +GAME.playerHand[0].value || (sumStartPointsPlayer / 2 === 10 &&
+      [GAME.playerHand[0].value, GAME.playerHand[1].value].every(value => ['10', 'j', 'q', 'k', 'a'].includes(value)))) {
+    splitButton.classList.remove('hidden');
   }
 };
 
@@ -207,8 +226,9 @@ const restart = () => {
   hitButton.classList.remove('hidden');
   doubleButton.classList.remove('hidden');
   dealButton.classList.add('hidden');
+  splitButton.classList.add('hidden');//!!!
 
-  if (GAME.deck.length <= 104 * 0.2 ) {
+  if (GAME.deck.length <= Math.round(104 * 0.2 )) {
     GAME.deck = [];
     GAME.deck = initializeDeck();
     message.innerHTML = 'Cards shuffled';
