@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
+
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+ol{
+    list-style-type: none;
+}
+body{
+    background: radial-gradient(circle, #163c85 0, #09265a 100%);
+    margin: 0;
+    padding: 0;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
+.game-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: -20vh;
+
+}
+
+.card-area {
+    transition: opacity 75ms ease-out;
+}
+
+.dealer{
+    margin-bottom: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 75ms ease-out;
+}
+
+.player{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 75ms ease-out;
+}
+
+.playing-card-list{
+    display: flex;
+}
+
+.hand{
+    display: flex;
+}
+
+.split-hand-item{
+    margin-left: 5em;
+}
+
+.player-hand-item {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.active-hand {
+    box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.8);
+}
+
+.invisible {
+    background-image: url("cards/suit.png");
+    width: 125px;
+    height: 175px;
+    background-size: cover;
+}
+
+.invisible img {
+    opacity: 0;
+}
+
+.playing-card-item{
+    margin: 1rem;
+}
+
+.playing-card-item img{
+    width: 125px;
+    height: 175px;
+    transition: opacity 75ms ease-out;
+}
+
+.playing-card-image {
+    opacity: 1;
+    border-radius: 4px;
+    display: block;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+}
+
+
+.points-area{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+.points{
+    font-family: Roboto, sans-serif;
+    font-weight: 200;
+    font-size: 25px;
+    color: #eff3ff;
+}
+
+.message-area{
+    min-height: 5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.message {
+    font-family: Roboto, sans-serif;
+    font-weight: 200;
+    font-size: 25px;
+    color: #eff3ff;
+}
+
+#cards {
+    font-size: 15px;
+    margin-bottom: 0.5rem;
+}
+
+.action-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.secondary button {
+    width: 80px;
+}
+
+.action-button{
+    margin: 0.5rem;
+    font-family: Roboto, sans-serif;
+    font-weight: 200;
+    min-width: 6em;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(90deg, #51a1f0 0%, #5999de 100%);
+    padding: 10px 30px;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.small{
+    min-width: 30px;
+    padding: 7px 15px;
+}
+
+.action-button:hover{
+    transition : 0ms;
+    background: linear-gradient(90deg, #3491e7 0%, #3281dc 100%);
+
+}
+
+.hidden {
+    display: none;
+    margin: 0;
+}
