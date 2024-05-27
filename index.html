@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="app">
+    <section class="game">
+        <section class="game-inner">
+            <div class="card-area">
+                <section class="dealer">
+                    <ol class="hand dealer-hand playing-card-list">
+                    </ol>
+                    <div class="points-area">
+                        <p id="dealer-points" class="points"></p>
+                    </div>
+                </section>
+                <section class="player">
+                    <ol id="player-hands" class="player-hands hand">
+                        <li class="player-hand-item">
+                            <ol class="player-hand playing-card-list"></ol>
+                        </li>
+                    </ol>
+                    <div class="points-area">
+                        <p id="player-points" class="points"></p>
+                    </div>
+                </section>
+
+            </div>
+            <div class="dashboard">
+                <div class="message-area">
+                    <p id="cards" class="message"></p>
+                    <p id="message" class="message"> </p>
+                </div>
+                <ol class="action-buttons primary">
+                    <li class="action-button-item stand">
+                        <button id="stand" class="action-button">Stand</button>
+                    </li>
+                    <li class="action-button-item hit">
+                        <button id="hit" class="action-button">Hit</button>
+                    </li>
+                    <li class="action-button-item deal">
+                        <button id="deal" class="action-button hidden">Deal</button>
+                    </li>
+
+                </ol>
+                <ol class="action-buttons secondary">
+                    <li class="action-button-item">
+                        <button id="double" class="action-button small">Double</button>
+                    </li>
+                    <li class="action-button-item split">
+                        <button id="split" class="action-button small hidden">Split</button>
+                    </li>
+                </ol>
+            </div>
+        </section>
+    </section>
+    <script src="src/js/App.js"></script>
+</div>
+</body>
+</html>
