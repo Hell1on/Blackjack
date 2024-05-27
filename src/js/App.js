@@ -11,39 +11,48 @@ const dealButton = document.querySelector("#deal");
 const splitButton = document.querySelector("#split");
 const playerHands = document.querySelector('#player-hands');
 
-const SUITS = ['h', 'd', 'c', 's'];
-const VALUES = ['2', '3', '4', '5', '6', '7',
-  '8', '9', '10', 'j', 'q', 'k', 'a'];
+const GAME = {
+  suits: ['h', 'd', 'c', 's'],
+  values: ['2', '3', '4', '5', '6', '7',
+    '8', '9', '10', 'j', 'q', 'k', 'a'],
+  deck: [],
+  activeHand: 0,
+  dealerHand: [],
+  playerHand: [],
 
-const initializeDeck = () => {
-  const deck = SUITS.reduce((deckAcc, suit) =>{
-    for (const value of VALUES) {
-      deckAcc.push({ value, suit })
-    }
-    return deckAcc
-  }, []);
+  initializeDeck() {
+    const deck = this.suits.reduce((deckAcc, suit) => {
+      for (const value of GAME.values) {
+        deckAcc.push({value, suit})
+      }
+      return deckAcc
+    }, []);
 
-  deck.push(...deck)
-  const shuffleDeck = (deck) => {
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-  };
+    deck.push(...deck)
+    const shuffleDeck = (deck) => {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+    };
 
-  shuffleDeck(deck);
+    shuffleDeck(deck);
 
-  return deck;
+    this.deck = deck
+  }
 };
+
 
 const dealCard = (hand, visibility = 1) => {
   const card = GAME.deck.pop();
   countCardsInDeck.innerHTML = `Cards left: ${GAME.deck.length}`;
+
   if (hand === 'dealer-hand'){
     GAME.dealerHand.push(card)
   } else if (hand === 'split-hand') {
     GAME.splitHand.push(card)
   } else GAME.playerHand.push(card)
+
   const cardImageName = `${card.value}_${card.suit}`;
   let invisible = '';
   if (!visibility) {
@@ -53,7 +62,6 @@ const dealCard = (hand, visibility = 1) => {
   calculateHands();
 
   const ol = document.getElementsByClassName(hand)[0];
-
   ol.innerHTML += `<li id="card${visibility + 1}" class="playing-card-item ${invisible}">
     <img src="src/cards/${cardImageName}.png" class="playing-card-image" alt="${cardImageName}">
   </li>`
@@ -205,7 +213,9 @@ const hit = () => {
 hitButton.addEventListener("click", hit);
 
 const double = () => {
-  dealCard("player-hand");
+  if (!GAME.activeHand) {
+    dealCard("player-hand");
+  } else dealCard("split-hand");
   stand()
 };
 doubleButton.addEventListener("click", double);
@@ -260,7 +270,6 @@ const removePlayingCards = () => {
   playingCards.forEach(card => card.remove());
 }
 
-
 const Game = () => {
   const sumStartPointsPlayer = dealCards(GAME.deck)[1];
   if (sumStartPointsPlayer === 21) {
@@ -293,8 +302,7 @@ const restart = () => {
   if (splitHand !== undefined) splitHand.remove()
 
   if (GAME.deck.length <= Math.round(104 * 0.2 )) {
-    GAME.deck = [];
-    GAME.deck = initializeDeck();
+    GAME.initializeDeck();
     message.innerHTML = 'Cards shuffled';
   }
   GAME.dealerHand = [];
@@ -306,13 +314,6 @@ const restart = () => {
 }
 dealButton.addEventListener("click", restart);
 
-
-const GAME = {
-  deck: initializeDeck(),
-  activeHand: 0,
-  dealerHand: [],
-  playerHand: [],
-};
-
+GAME.initializeDeck()
 Game()
 
