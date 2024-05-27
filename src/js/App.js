@@ -55,7 +55,7 @@ const dealCard = (hand, visibility = 1) => {
   const ol = document.getElementsByClassName(hand)[0];
 
   ol.innerHTML += `<li id="card${visibility + 1}" class="playing-card-item ${invisible}">
-    <img src="cards/${cardImageName}.png" class="playing-card-image" alt="${cardImageName}">
+    <img src="src/cards/${cardImageName}.png" class="playing-card-image" alt="${cardImageName}">
   </li>`
 };
 
@@ -234,7 +234,7 @@ const split = () => {
             <li class="player-hand-item split-hand-item">
                 <ol class="split-hand playing-card-list">
                     <li class="playing-card-item">
-                        <img src="cards/${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}.png" class="playing-card-image" alt="${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}">
+                        <img src="src/cards/${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}.png" class="playing-card-image" alt="${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}">
                     </li>
                 </ol>
             </li>
