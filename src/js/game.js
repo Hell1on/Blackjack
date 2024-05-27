@@ -1,5 +1,7 @@
 'use strict';
 
+import { showCalculatedHands } from './ui.js';
+
 const GAME = {
     suits: ['h', 'd', 'c', 's'],
     values: ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a'],
@@ -105,15 +107,14 @@ const calculateHands = (noStand = 1) => {
 
     const sumPointsDealer = calculatingPoints(GAME.dealerHand);
     const sumPointsPlayer = calculatingPoints(GAME.playerHand);
-    document.querySelector("#dealer-points").innerHTML = `Points: ${sumPointsDealer}`;
-    document.querySelector("#player-points").innerHTML = `Points: ${sumPointsPlayer}`;
 
     if (GAME.splitHand.length) {
         const sumPointsSplit = calculatingPoints(GAME.splitHand);
-        document.querySelector("#player-points").innerHTML += ` / ${sumPointsSplit}`;
+        showCalculatedHands(sumPointsDealer, sumPointsPlayer, sumPointsSplit)
         return [sumPointsDealer, sumPointsPlayer, sumPointsSplit];
     }
 
+    showCalculatedHands(sumPointsDealer, sumPointsPlayer)
     return [sumPointsDealer, sumPointsPlayer];
 };
 

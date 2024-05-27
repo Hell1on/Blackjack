@@ -27,6 +27,15 @@ const showWinnerMessage = () => {
     removeButtons();
 };
 
+const showCalculatedHands = (sumPointsDealer, sumPointsPlayer, sumPointsSplit) => {
+    dealerPoints.innerHTML = `Points: ${sumPointsDealer}`;
+    playerPoints.innerHTML = `Points: ${sumPointsPlayer}`;
+
+    if (sumPointsSplit) {
+        playerPoints.innerHTML += ` / ${sumPointsSplit}`;
+    }
+}
+
 const setActiveHand = () => {
     const hands = document.querySelectorAll('.player-hand-item');
     for (let index = 0; index < hands.length; index++) {
@@ -57,14 +66,16 @@ const stand = () => {
         showWinnerMessage();
         return;
     }
-    const sumPointsPlayer = calculateHands()[1];
+
+    const sumPointsSplit = calculateHands()[2];
     GAME.activeHand = 1;
     setActiveHand();
-    if (sumPointsPlayer === 21) stand()
+    if (sumPointsSplit === 21) stand()
 };
 standButton.addEventListener("click", stand);
 
 const hit = () => {
+    if (!document.querySelector("#split").classList.contains('hidden')) splitButton.classList.add('hidden');
     if (!GAME.activeHand) {
         dealCard("player-hand");
     } else {
@@ -84,6 +95,8 @@ const hit = () => {
         if (GAME.splitHand.length && GAME.activeHand === 0) {
             GAME.activeHand = 1;
             setActiveHand();
+            const sumPointsSplit = calculateHands()[2];
+            if (sumPointsSplit === 21) stand()
             return;
         }
         const hideCard = document.getElementsByClassName("invisible")[0];
@@ -166,4 +179,4 @@ const restart = () => {
 };
 dealButton.addEventListener("click", restart);
 
-export { removeButtons, showWinnerMessage, setActiveHand, removePlayingCards, stand, hit, double, split, restart };
+export { removeButtons, showWinnerMessage, showCalculatedHands, setActiveHand, removePlayingCards, stand, hit, double, split, restart };
