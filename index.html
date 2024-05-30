@@ -34,21 +34,37 @@
                     <p id="cards" class="message"></p>
                     <p id="message" class="message"> </p>
                 </div>
+                <div class="betting-area message-area">
+                    <div class="balance-area">
+                        <p id="balance" class="message">Balance: 1000</p>
+                    </div>
+                    <ol id="betting-buttons" class="betting-buttons">
+                        <li><button class="bet-button" data-bet="5">5</button></li>
+                        <li><button class="bet-button" data-bet="10">10</button></li>
+                        <li><button class="bet-button" data-bet="20">20</button></li>
+                        <li><button class="bet-button" data-bet="100">100</button></li>
+                        <li><button class="bet-button" data-bet="200">200</button></li>
+                        <li><button class="bet-button" data-bet="500">500</button></li>
+                        <li><button id="reset" class="action-button" >X</button></li>
+                    </ol>
+                    <p id="current-bet" class="message">Current Bet: 0</p>
+                </div>
+
                 <ol class="action-buttons primary">
                     <li class="action-button-item stand">
-                        <button id="stand" class="action-button">Stand</button>
+                        <button id="stand" class="action-button hidden">Stand</button>
                     </li>
                     <li class="action-button-item hit">
-                        <button id="hit" class="action-button">Hit</button>
+                        <button id="hit" class="action-button hidden">Hit</button>
                     </li>
                     <li class="action-button-item deal">
-                        <button id="deal" class="action-button hidden">Deal</button>
+                        <button id="deal" class="action-button">Deal</button>
                     </li>
 
                 </ol>
                 <ol class="action-buttons secondary">
                     <li class="action-button-item">
-                        <button id="double" class="action-button small">Double</button>
+                        <button id="double" class="action-button small hidden">Double</button>
                     </li>
                     <li class="action-button-item split">
                         <button id="split" class="action-button small hidden">Split</button>

@@ -1,6 +1,6 @@
 'use strict';
 
-import { showCalculatedHands } from './ui.js';
+import { showCalculatedHands, showBid, showCardsLeft } from './ui.js';
 
 const GAME = {
     suits: ['h', 'd', 'c', 's'],
@@ -10,6 +10,9 @@ const GAME = {
     dealerHand: [],
     playerHand: [],
     splitHand: [],
+    balance: 1000,
+    playerBet: 0,
+    splitBet: 0,
 
     initializeDeck() {
         const deck = this.suits.reduce((deckAcc, suit) => {
@@ -34,7 +37,7 @@ const GAME = {
 
 const dealCard = (hand, visibility = 1) => {
     const card = GAME.deck.pop();
-    document.querySelector("#cards").innerHTML = `Cards left: ${GAME.deck.length}`;
+    showCardsLeft()
 
     if (hand === 'dealer-hand') {
         GAME.dealerHand.push(card);
@@ -118,39 +121,56 @@ const calculateHands = (noStand = 1) => {
     return [sumPointsDealer, sumPointsPlayer];
 };
 
-const getWinnerMessage = (sumPointsDealer, sumPointsPlayer, sumPointsSplit) => {
-    const createMessage = (sumPointsDealer, hand) => {
-        if (hand === 21 && sumPointsDealer === 21) {
-            return 'Push';
-        } else if (hand === 21) {
-            return 'Player wins (Blackjack)';
+const getWinner = (sumPointsDealer, sumPointsPlayer, sumPointsSplit, blackjack) => {
+    const createMessage = (sumPointsDealer, hand, blackjack, bid) => {
+        if (blackjack && sumPointsDealer !== 21) {
+            GAME.balance += (bid * 2) + bid/ 2;
+            return 'Player wins x2.5(Blackjack)';
+        } else if (blackjack){
+            GAME.balance += bid;
+            return 'Push x1';
         }
+
         if (hand > 21) {
             return 'Dealer wins (bust)';
         }
         if (sumPointsDealer <= 21) {
             if (hand > sumPointsDealer) {
-                return 'Player wins';
+                GAME.balance += bid * 2;
+                return 'Player wins x2';
             } else if (hand < sumPointsDealer) {
                 return 'Dealer wins';
             } else {
-                return 'Push';
+                GAME.balance += bid;
+                return 'Push x1';
             }
         } else {
-            return 'Player wins (bust)';
+            GAME.balance += bid * 2;
+            return 'Player wins x2 (bust)';
         }
     };
 
     let resultMessage = '';
 
     if (sumPointsSplit !== undefined) {
-        resultMessage += createMessage(sumPointsDealer, sumPointsPlayer) + ' / ';
-        resultMessage += createMessage(sumPointsDealer, sumPointsSplit);
+        resultMessage += createMessage(sumPointsDealer, sumPointsPlayer, blackjack, GAME.playerBet) + ' / ';
+        resultMessage += createMessage(sumPointsDealer, sumPointsSplit, blackjack, GAME.splitBet);
     } else {
-        resultMessage += createMessage(sumPointsDealer, sumPointsPlayer);
+        resultMessage += createMessage(sumPointsDealer, sumPointsPlayer, blackjack, GAME.playerBet);
     }
 
     return resultMessage;
 };
 
-export { GAME, dealCard, dealCards, calculateHands, getWinnerMessage };
+
+const updateBet = (amount=0) => {
+    if (GAME.balance - amount >= 0) {
+        GAME.balance -= amount;
+        GAME.playerBet += amount;
+        showBid()
+        return;
+    }
+    alert('Not enough chips')
+};
+
+export { GAME, dealCard, dealCards, calculateHands, getWinner, updateBet };
