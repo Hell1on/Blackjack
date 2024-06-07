@@ -25,15 +25,24 @@ const removeButtons = () => {
     dealButton.classList.remove('hidden');
 };
 
+const resetBets = () => {
+    GAME.playerBet = 0;
+    GAME.splitBet = 0;
+    showBid();
+};
+
 const showWinnerMessage = (blackjack = 0) => {
     const [sumPointsDealer, sumPointsPlayer, sumPointsSplit] = calculateHands(0);
     message.innerHTML = getWinner(sumPointsDealer, sumPointsPlayer, sumPointsSplit, blackjack);
-    GAME.playerBet = 0;
-    GAME.splitBet = 0;
-    updateBet()
+    resetBets()
     removeButtons();
     bettingButtons.classList.remove('hidden');
 };
+
+const showDealerCard = () => {
+    const hideCard = document.getElementsByClassName("invisible")[0];
+    hideCard.classList.remove("invisible");
+}
 
 const showCalculatedHands = (sumPointsDealer, sumPointsPlayer, sumPointsSplit) => {
     dealerPoints.innerHTML = `Points: ${sumPointsDealer}`;
@@ -57,11 +66,7 @@ const showBid = () => {
 const setActiveHand = () => {
     const hands = document.querySelectorAll('.player-hand-item');
     for (let index = 0; index < hands.length; index++) {
-        if (index === GAME.activeHand) {
-            hands[index].classList.add('active-hand');
-        } else {
-            hands[index].classList.remove('active-hand');
-        }
+        hands[index].classList.toggle('active-hand', index === GAME.activeHand);
     }
 };
 
@@ -72,11 +77,33 @@ const removePlayingCards = () => {
     }
 };
 
+const resetGame = () => {
+    removePlayingCards();
+    dealerPoints.innerHTML = '';
+    playerPoints.innerHTML = '';
+    message.innerHTML = '';
+    countCardsInDeck.innerHTML = '';
+    bettingButtons.classList.add('hidden');
+    standButton.classList.remove('hidden');
+    hitButton.classList.remove('hidden');
+    doubleButton.classList.remove('hidden');
+    dealButton.classList.add('hidden');
+    splitButton.classList.add('hidden');
+    document.querySelector('.split-hand-item')?.remove();
+    if (GAME.deck.length <= Math.round(104 * 0.2)) {
+        GAME.initializeDeck();
+        message.innerHTML = 'Cards shuffled';
+    }
+    GAME.dealerHand = [];
+    GAME.playerHand = [];
+    GAME.splitHand = [];
+    GAME.activeHand = 0;
+};
+
 const stand = () => {
     if (!GAME.splitHand.length || GAME.activeHand) {
         if (!splitButton.classList.contains('hidden')) splitButton.classList.add('hidden');
-        const hideCard = document.getElementsByClassName("invisible")[0];
-        hideCard.classList.remove("invisible");
+        showDealerCard()
         let [sumPointsDealer] = calculateHands(0);
 
         while (sumPointsDealer < 17) {
@@ -121,8 +148,7 @@ const hit = () => {
             if (sumPointsSplit === 21) stand()
             return;
         }
-        const hideCard = document.getElementsByClassName("invisible")[0];
-        hideCard.classList.remove("invisible");
+        showDealerCard()
         showWinnerMessage();
     }
 };
@@ -150,71 +176,44 @@ const split = () => {
     if (GAME.balance - GAME.playerBet < 0){
         return alert('Not enough chips')
     }
-    if (GAME.playerHand.length === 2) {
-        GAME.splitHand = [GAME.playerHand.pop()];
-        GAME.balance -= GAME.playerBet;
-        GAME.splitBet = GAME.playerBet
-        updateBet()
 
-        const newHandHTML = `
-            <li class="player-hand-item split-hand-item">
-                <ol class="split-hand playing-card-list">
-                    <li class="playing-card-item">
-                        <img src="src/cards/${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}.png" class="playing-card-image" alt="${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}">
-                    </li>
-                </ol>
-            </li>
-            `;
-        playerHands.innerHTML += newHandHTML;
+    GAME.splitHand = [GAME.playerHand.pop()];
+    GAME.balance -= GAME.playerBet;
+    GAME.splitBet = GAME.playerBet
+    updateBet()
 
-        const playingCard = document.getElementsByClassName('playing-card-item')[3];
-        playingCard.remove();
+    const newHandHTML = `
+        <li class="player-hand-item split-hand-item">
+            <ol class="split-hand playing-card-list">
+                <li class="playing-card-item">
+                    <img src="src/cards/${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}.png" class="playing-card-image" alt="${GAME.splitHand[0].value}_${GAME.splitHand[0].suit}">
+                </li>
+            </ol>
+        </li>
+        `;
+    playerHands.innerHTML += newHandHTML;
+    const playingCard = document.getElementsByClassName('playing-card-item')[3];
+    playingCard.remove();
 
-        dealCard('player-hand');
-        dealCard('split-hand');
+    dealCard('player-hand');
+    dealCard('split-hand');
 
-        const sumPointsPlayer = calculateHands()[1];
-        setActiveHand();
-        if (sumPointsPlayer === 21) stand()
-        splitButton.classList.add('hidden');
-    }
+    const sumPointsPlayer = calculateHands()[1];
+    setActiveHand();
+    if (sumPointsPlayer === 21) stand()
+    splitButton.classList.add('hidden');
+
 };
 splitButton.addEventListener("click", split);
 
 const deal = () => {
     if (GAME.playerBet === 0) {
-        return alert("Place a bet")
+        return alert("Place a bet");
     }
-    removePlayingCards();
-
-
-    dealerPoints.innerHTML = '';
-    playerPoints.innerHTML = '';
-    message.innerHTML = '';
-    countCardsInDeck.innerHTML = '';
-
-    bettingButtons.classList.add('hidden');
-    standButton.classList.remove('hidden');
-    hitButton.classList.remove('hidden');
-    doubleButton.classList.remove('hidden');
-    dealButton.classList.add('hidden');
-    splitButton.classList.add('hidden');
-    const splitHand = document.getElementsByClassName('split-hand-item')[0];
-    if (splitHand !== undefined) splitHand.remove();
-
-    if (GAME.deck.length <= Math.round(104 * 0.2)) {
-        GAME.initializeDeck();
-        message.innerHTML = 'Cards shuffled';
-    }
-    GAME.dealerHand = [];
-    GAME.playerHand = [];
-    if (GAME.splitHand.length) GAME.splitHand = []
-    GAME.activeHand = 0;
-
+    resetGame();
     startGame();
 };
 dealButton.addEventListener("click", deal);
-
 
 document.querySelectorAll('.bet-button').forEach(button => {
     button.addEventListener('click', () => {
@@ -233,4 +232,4 @@ const resetBet = () => {
 resetButton.addEventListener('click', resetBet)
 
 export { removeButtons, showWinnerMessage, showCalculatedHands, setActiveHand, removePlayingCards, showBid,
-    stand, hit, double, split, deal, showCardsLeft };
+    stand, hit, double, split, deal, showCardsLeft, showDealerCard };
