@@ -162,7 +162,6 @@ const getWinner = (sumPointsDealer, sumPointsPlayer, sumPointsSplit, blackjack) 
     return resultMessage;
 };
 
-
 const updateBet = (amount=0) => {
     if (GAME.balance - amount >= 0) {
         GAME.balance -= amount;

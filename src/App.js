@@ -1,19 +1,25 @@
 'use strict';
 import { GAME, dealCards } from './js/game.js';
-import { showWinnerMessage } from './js/ui.js';
+import { showWinnerMessage, showDealerCard } from './js/ui.js';
+
+const canSplit = (sumStartPointsPlayer) => {
+  const [firstCard, secondCard] = GAME.playerHand;
+  const isPair = +firstCard.value === +secondCard.value;
+  const isTenPair = ['10', 'j', 'q', 'k'].includes(firstCard.value) && ['10', 'j', 'q', 'k'].includes(secondCard.value);
+  const hasAce = ['a'].includes(firstCard.value, secondCard.value);
+  const isSumTen = sumStartPointsPlayer / 2 === 10;
+
+  return isPair || (isSumTen && isTenPair) || hasAce;
+};
 
 const startGame = () => {
-  console.dir(GAME)
   const sumStartPointsPlayer = dealCards(GAME.deck)[1];
   if (sumStartPointsPlayer === 21) {
-    const hideCard = document.getElementsByClassName("invisible")[0];
-    hideCard.classList.remove("invisible");
+    showDealerCard()
     return showWinnerMessage(1);
   }
 
-  if ((sumStartPointsPlayer / 2 === +GAME.playerHand[0].value) || (sumStartPointsPlayer / 2 === 10 &&
-      [GAME.playerHand[0].value, GAME.playerHand[1].value].every(value => ['10', 'j', 'q', 'k'].includes(value))) ||
-      ['a'].includes(GAME.playerHand[0].value, GAME.playerHand[1].value)) {
+  if (canSplit(sumStartPointsPlayer)) {
     document.querySelector("#split").classList.remove('hidden');
   }
 };
